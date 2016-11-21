@@ -1,0 +1,8 @@
+Host bastion.magazine-mlg-a
+  Hostname 52.55.179.146
+  User ec2-user
+  IdentityFile ~/.ssh/id_rsa
+  ForwardAgent yes
+  ControlMaster auto
+  ControlPath ~/.ssh/ansible-%r@%h:%p
+  ControlPersist 8h

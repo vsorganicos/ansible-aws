@@ -88,4 +88,5 @@ ENV/
 # Rope project settings
 .ropeproject
 
-files/
+files/key-us-east-1-default-bastion-01.pem
+files/credentials
