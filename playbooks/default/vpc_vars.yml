@@ -1,0 +1,49 @@
+---
+ vpc_us_east:
+   cidr_block: 10.180.64.0/18
+   profile: felipe.guerra
+   region: us-east-1
+   resource_tags: "VPC-MLG-A"
+   subnets:
+     - name: 'net-us-east-1a-dmz-vpc-001'
+       cidr: 10.180.64.0/23
+       az: a
+     - name: 'net-us-east-1a-prd-vpc-001'
+       cidr: 10.180.80.0/23
+       az: a
+     - name: 'net-us-east-1c-dmz-vpc-001'
+       cidr: 10.180.96.0/23
+       az: c
+     - name: 'net-us-east-1c-prd-vpc-001'
+       cidr: 10.180.100.0/23
+       az: c
+     - name: 'net-us-east-1a-hml-vpc-001'
+       cidr: 10.180.72.0/23
+       az: a
+     - name: 'net-us-east-1c-hml-vpc-001'
+       cidr: 10.180.88.0/23
+       az: c
+     - name: 'net-us-east-1a-dev-vpc-001'
+       cidr: 10.180.68.0/23
+       az: a
+     - name: 'net-us-east-1c-dev-vpc-001'
+       cidr: 10.180.78.0/23
+       az: c
+
+ vpc_route_table:
+   profile: felipe.guerra
+   region: us-east-1
+   public_route:
+     tags:
+       - name: 'rtb-us-east-1-Public'
+         subnet: 'net-us-east-1c-dmz-vpc-001'
+       - name: 'rtb-us-east-1-Public'
+         subnet: 'net-us-east-1a-dmz-vpc-001'
+       - name: 'rtb-us-east-1a-private-001'
+         subnet: 'net-us-east-1a-hml-vpc-001'
+   private_route:
+     tags:
+       - name: 'rtb-us-east-1a-private-001'
+         subnet: 'net-us-east-1a-hml-vpc-001'
+       - name: 'rtb-us-east-1a-private-001'
+         subnet: 'net-us-east-1a-dev-vpc-001'

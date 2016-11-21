@@ -1,0 +1,96 @@
+---
+  - name: configura uma nova VPC (Virtual Private Cloud)
+    ec2_vpc:
+      state: present
+      region: "{{ vpc_us_east['region'] }}"
+      profile: "{{ vpc_us_east['profile'] }}"
+      cidr_block: "{{ vpc_us_east['cidr_block'] }}"
+      internet_gateway: yes
+      wait: yes
+      wait_timeout: 300
+      resource_tags:
+        Name: "{{  vpc_us_east['resource_tags'] }}"
+    register: vpc_create_facts
+
+  - name: debug create vpc facts
+    debug: 'msg="{{ vpc_create_facts }}"'
+
+  - name: cria as subnets da VPC
+    ec2_vpc_subnet:
+      state: present
+      region: "{{ vpc_us_east['region'] }}"
+      profile: "{{ vpc_us_east['profile'] }}"
+      vpc_id: "{{ vpc_create_facts.vpc_id }}"
+      cidr: "{{ item.cidr }}"
+      az: "{{ vpc_us_east['region'] }}{{ item.az }}"
+      resource_tags:
+        Name: "{{ item.name }}"
+    with_items: "{{ vpc_us_east['subnets'] }}"
+    register: vpc_create_subnet_facts
+
+  - name: criar o internet gateway para as subnets
+    ec2_vpc_igw:
+      state: present
+      region: "{{ vpc_us_east['region'] }}"
+      profile: "{{ vpc_us_east['profile'] }}"
+      vpc_id: "{{ vpc_create_facts.vpc_id }}"
+    register: vpc_create_igw_facts
+
+  - name: debug create vpc facts
+    debug: 'msg="{{ vpc_create_igw_facts }}"'
+
+  - name: criar a rota para as subnets publicas
+    ec2_vpc_route_table:
+      state: present
+      vpc_id: "{{ vpc_create_facts.vpc_id }}"
+      region: "{{ vpc_route_table['region'] }}"
+      profile: "{{ vpc_route_table['profile'] }}"
+      tags:
+        Name: "{{ item.name }}"
+      subnets:
+        - "{{ item.subnet }}"
+      routes:
+        - dest: 0.0.0.0/0
+          gateway_id: "{{ vpc_create_igw_facts.gateway_id }}"
+    with_items: "{{ vpc_route_table['public_route'].tags }}"
+    when: vpc_create_route_table|default(False)
+
+  # Disponível somente na versão 2.2 ou superior do Ansible
+
+  # - name: Criar o NAT Gateway para as redes privadas.
+  #   ec2_vpc_nat_gateway:
+  #     profile: "{{ vpc_route_table['profile'] }}"
+  #     region: "{{ vpc_route_table['region'] }}"
+  #     state: present
+  #     wait: yes
+  #     wait_timeout: 300
+  #     if_exist_do_not_create: yes
+  #   register: create_vpc_private_routes_facts
+  #
+  # - name: debug route table facts
+  #   debug: 'msg="{{ create_vpc_private_routes_facts }}"'
+
+  - name: criar a rota para as subnets privadas
+    ec2_vpc_route_table:
+      state: present
+      vpc_id: "{{ vpc_create_facts.vpc_id }}"
+      region: "{{ vpc_route_table['region'] }}"
+      profile: "{{ vpc_route_table['profile'] }}"
+      tags:
+        Name: "{{ item.name }}"
+      subnets:
+        - "{{ item.subnet }}"
+      routes:
+        - dest: 0.0.0.0/0
+          instance_id: "nat-0f8457755af4f9bc4"
+    with_items: "{{ vpc_route_table['private_route'].tags }}"
+    when: vpc_create_route_table|default(False)
+
+  - name: recupera os dados das rotas existentes
+    ec2_vpc_route_table_facts:
+      profile: "{{ vpc_route_table['profile'] }}"
+      region: "{{ vpc_route_table['region'] }}"
+    register: prev_route_tables_facts
+
+  - name: debug route table facts
+    debug: 'msg="{{ prev_route_tables_facts }}"'

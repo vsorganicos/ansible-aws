@@ -1,0 +1,10 @@
+---
+- hosts: localhost
+  remote_user: root
+  become: yes
+
+  tasks:
+  - include: tasks/provisioning_vpc.yml vpc_create_route_table="yes"
+
+  vars_files:
+  - 'default/vpc_vars.yml'
