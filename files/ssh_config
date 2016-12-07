@@ -6,3 +6,14 @@ Host bastion.magazine-mlg-a
   ControlMaster auto
   ControlPath ~/.ssh/ansible-%r@%h:%p
   ControlPersist 8h
+
+Host 10.158.*
+  ProxyCommand ssh -q -A _felipe@54.233.79.113 -i /root/.ssh/_felipe_rsa nc %h %p
+  IdentityFile /root/.ssh/sa_east_1_rsa
+  ServerAliveInterval 6000
+  TCPKeepAlive yes
+  ControlMaster auto
+  ControlPath ~/.ssh/ansible-%r@%h:%p
+  User ubuntu
+  ForwardAgent yes
+  ControlPersist 8h

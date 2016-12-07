@@ -21,15 +21,17 @@ RUN mkdir -p /root/.aws/ \
 COPY files/credentials /root/.aws/credentials
 
 COPY files/key-us-east-1-default-bastion-01.pem /root/.ssh/id_rsa
+COPY files/key-sa-east-1-mlg-a-admin-01.pem /root/.ssh/sa_east_1_rsa
+COPY files/_felipe.pem /root/.ssh/_felipe_rsa
 
 COPY playbooks /root/ansible/
 
 ENV ANSIBLE_HOSTS "/etc/ansible/ec2.py"
-
 ENV EC2_INI_PATH "/etc/ansible/ec2.ini"
 
 COPY files/ec2.ini /etc/ansible/
 COPY files/ec2.py /etc/ansible/
+COPY files/ssh_config /root/.ssh/config
 
 WORKDIR /root/ansible
 
