@@ -1,14 +1,17 @@
 FROM ubuntu:trusty
 
-RUN apt-get update && apt-get install -y git python libssl-dev wget --fix-missing
+RUN apt-get update \
+    && apt-get install -y git python libssl-dev wget --fix-missing
 
 RUN apt-get install -y software-properties-common vim
 
 RUN apt-add-repository -y ppa:ansible/ansible
 
-RUN apt-get update && apt-get install -y ansible
+RUN apt-get update \
+    && apt-get install -y ansible
 
-RUN apt-get update && apt-get install -y python-pip --fix-missing
+RUN apt-get update \
+    && apt-get install -y python-pip --fix-missing
 
 RUN mkdir -p /root/.aws/ \
     && mkdir -p /root/ansible \
@@ -22,3 +25,5 @@ COPY files/key-us-east-1-default-bastion-01.pem /root/.ssh/id_rsa
 COPY playbooks /root/ansible/
 
 WORKDIR /root/ansible
+
+RUN chmod +x provisioning_instances.sh

@@ -1,0 +1,36 @@
+---
+  ec2_ami:
+    profile: felipe.guerra
+    region: sa-east-1
+    architecture: x86_64
+    is_public: false
+    no_result_action: success
+    sort: creationDate
+    sort_order: descending
+    virtualization_type: hvm
+    platform: amazon-linux
+
+  #EC2 configuration instances
+  ec2_instance:
+    - instance_type: t2.micro
+      assign_public_ip: no
+      count: 1
+      ebs_optimized: False
+      key_name: key-sa-east-1-mlg-a-admin-01
+      region: sa-east-1
+      profile: felipe.guerra
+      description: 'Imagem utilizada como base para exemplo do Ansible'
+      wait: yes
+      vpc_subnet_id: subnet-ab6ebcf2
+      termination_protection: yes
+      monitoring: yes
+      group: ['sgp-sa-east-1-mlg-a-admin-01']
+      instance_tags:
+        Name: 'srv-lx-sa-east-1a-mlg-a-ansible-test'
+        project: 'ansible-test'
+        env: 'test'
+      volumes:
+        - device_name: /dev/sdb
+          volume_type: gp2 #http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html
+          volume_size: 8
+          delete_on_termination: true

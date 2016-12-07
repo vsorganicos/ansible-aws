@@ -1,0 +1,10 @@
+---
+- hosts: localhost
+  remote_user: root
+  become: yes
+
+  tasks:
+  - include: tasks/provisioning_ec2.yml create_ec2_instances=False terminate_ec2_instances="yes"
+
+  vars_files:
+  - 'default/ec2_vars.yml'
