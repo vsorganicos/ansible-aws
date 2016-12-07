@@ -24,6 +24,14 @@ COPY files/key-us-east-1-default-bastion-01.pem /root/.ssh/id_rsa
 
 COPY playbooks /root/ansible/
 
+ENV ANSIBLE_HOSTS "/etc/ansible/ec2.py"
+
+ENV EC2_INI_PATH "/etc/ansible/ec2.ini"
+
+COPY files/ec2.ini /etc/ansible/
+COPY files/ec2.py /etc/ansible/
+
 WORKDIR /root/ansible
 
-RUN chmod +x provisioning_instances.sh
+RUN chmod +x provisioning_instances.sh \
+  && chmod +x /etc/ansible/ec2.py
